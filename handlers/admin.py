@@ -4,7 +4,8 @@ from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram import types, Dispatcher
 from aiogram.dispatcher.filters import Text
 from data_base import sqlite_db
-from keyboards import admin_kb
+from keyboards import admin_kb, other_kb
+from confid_data import ADMINS
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 class FSMadmin(StatesGroup):
@@ -15,7 +16,10 @@ class FSMadmin(StatesGroup):
     user_name = State()
 
 async def commands_start(message: types.Message):
-    await bot.send_message(message.from_user.id, 'система управления складом', reply_markup=admin_kb.button_case_admin)
+    if message.from_user.id in ADMINS:
+        await bot.send_message(message.from_user.id, 'система управления складом', reply_markup=admin_kb.button_case_admin)
+    else:
+        await bot.send_message(message.from_user.id, 'нет доступа')
 
 async def cm_start(message: types.Message):
     await FSMadmin.photo.set()
@@ -63,7 +67,7 @@ async def loaded_by(message: types.Message, state: FSMContext):
     await sqlite_db.sql_add_comand(state)
 
     await state.finish()
-
+    await bot.send_message(message.from_user.id, 'Что делаем дальше?', reply_markup=other_kb.kb_other)
 
 
 # @dp.callback_query_handlers(lambda x: x.data and x.data.startwith('del '))
@@ -91,6 +95,8 @@ async def load_quantity_delete(message: types.Message, state: FSMContext):
     await sqlite_db.sql_delete_command(state)
 
     await state.finish()
+    await bot.send_message(message.from_user.id, 'Что делаем дальше?', reply_markup=other_kb.kb_other)
+
 
 
 
