@@ -3,6 +3,7 @@ from aiogram.utils import executor
 from create_bot import dp
 from data_base import sqlite_db
 from handlers import admin, client, others
+APP_TOKEN = "https://git.heroku.com/tgbotsklad.git"
 
 
 async def on_startup(_):
