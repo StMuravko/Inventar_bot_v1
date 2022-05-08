@@ -1,12 +1,13 @@
-from aiogram.dispatcher import FSMContext
-from create_bot import dp, bot
-from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram import types, Dispatcher
+from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Text
-from data_base import sqlite_db
-from keyboards import admin_kb, other_kb
+from aiogram.dispatcher.filters.state import State, StatesGroup
+
 from confid_data import ADMINS
-from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from create_bot import bot
+from data_base import databae_postgre
+from keyboards import admin_kb, other_kb
+
 
 class FSMadmin(StatesGroup):
     photo = State()
@@ -15,11 +16,14 @@ class FSMadmin(StatesGroup):
     quantity = State()
     user_name = State()
 
+
 async def commands_start(message: types.Message):
     if message.from_user.id in ADMINS:
-        await bot.send_message(message.from_user.id, 'система управления складом', reply_markup=admin_kb.button_case_admin)
+        await bot.send_message(message.from_user.id, 'система управления складом',
+                               reply_markup=admin_kb.button_case_admin)
     else:
         await bot.send_message(message.from_user.id, 'нет доступа')
+
 
 async def cm_start(message: types.Message):
     await FSMadmin.photo.set()
@@ -32,12 +36,14 @@ async def load_photo(message: types.Message, state: FSMContext):
     await FSMadmin.next()
     await message.reply('add name')
 
+
 async def cancel_handler(message: types.Message, state: FSMContext):
     current_state = await state.get_state()
     if current_state is None:
         return
     await state.finish()
     await message.reply('ok')
+
 
 async def load_name(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
@@ -64,24 +70,21 @@ async def loaded_by(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         data['user_name'] = message.text
 
-    await sqlite_db.sql_add_comand(state)
+    await databae_postgre.add_info(state)
 
     await state.finish()
     await bot.send_message(message.from_user.id, 'Что делаем дальше?', reply_markup=other_kb.kb_other)
-
-
-# @dp.callback_query_handlers(lambda x: x.data and x.data.startwith('del '))
-# async def del_callback_run(callback_query: types.callback_query):
-#     await sqlite_db.sql
 
 
 class FSMdelete(StatesGroup):
     name = State()
     quantity = State()
 
+
 async def cm_start_delete(message: types.Message):
     await FSMdelete.name.set()
     await message.reply('print name')
+
 
 async def load_name_delete(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
@@ -89,15 +92,14 @@ async def load_name_delete(message: types.Message, state: FSMContext):
     await FSMdelete.next()
     await message.reply('количество')
 
+
 async def load_quantity_delete(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         data['quantity'] = int(message.text)
-    await sqlite_db.sql_delete_command(state)
+    await databae_postgre.sql_delete_command(state)
 
     await state.finish()
     await bot.send_message(message.from_user.id, 'Что делаем дальше?', reply_markup=other_kb.kb_other)
-
-
 
 
 def register_handlers_admin(dp: Dispatcher):
@@ -113,4 +115,3 @@ def register_handlers_admin(dp: Dispatcher):
     dp.register_message_handler(cm_start_delete, commands=['delete'])
     dp.register_message_handler(load_name_delete, state=FSMdelete.name)
     dp.register_message_handler(load_quantity_delete, state=FSMdelete.quantity)
-
