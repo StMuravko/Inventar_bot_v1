@@ -9,6 +9,7 @@ APP_TOKEN = "https://git.heroku.com/tgbotsklad.git"
 async def on_startup(_):
     print('bot online')
     databae_postgre.create_db()
+    print('DB connected')
 
 
 others.register_handlers_other(dp)

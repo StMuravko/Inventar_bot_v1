@@ -3,18 +3,21 @@ import psycopg2
 from confid_data import BD_URL
 from create_bot import bot
 
-base = psycopg2.connect(BD_URL)
-cur = base.cursor()
+# base = psycopg2.connect(BD_URL)
+# cur = base.cursor()
 
 
 def create_db():
+    global base, cur
+    base = psycopg2.connect(BD_URL)
+    cur = base.cursor()
     if base:
+        print('Connection>>>')
         cur.execute(
             "CREATE TABLE IF NOT EXISTS inventar(photo TEXT, name TEXT PRIMARY KEY, groups TEXT, quantity INTEGER, loaded_by TEXT)"
         )
         base.commit()
         print('Done')
-        cur.close()
 
 
 async def add_info(state):
