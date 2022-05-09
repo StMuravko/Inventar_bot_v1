@@ -27,14 +27,14 @@ async def commands_start(message: types.Message):
 
 async def cm_start(message: types.Message):
     await FSMadmin.photo.set()
-    await message.reply('add photo')
+    await message.reply('Загрузите фото')
 
 
 async def load_photo(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         data['photo'] = message.photo[0].file_id
     await FSMadmin.next()
-    await message.reply('add name')
+    await message.reply('Введите наименование')
 
 
 async def cancel_handler(message: types.Message, state: FSMContext):
@@ -49,21 +49,21 @@ async def load_name(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         data['name'] = message.text
     await FSMadmin.next()
-    await message.reply('add group')
+    await message.reply('Группа товара')
 
 
 async def load_group(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         data['group'] = message.text
     await FSMadmin.next()
-    await message.reply('add quantity')
+    await message.reply('Введите количество')
 
 
 async def load_quantity(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         data['quantity'] = int(message.text)
     await FSMadmin.next()
-    await message.reply('add your name')
+    await message.reply('Ваше Имя')
 
 
 async def loaded_by(message: types.Message, state: FSMContext):
@@ -83,14 +83,14 @@ class FSMdelete(StatesGroup):
 
 async def cm_start_delete(message: types.Message):
     await FSMdelete.name.set()
-    await message.reply('print name')
+    await message.reply('Введите наименование')
 
 
 async def load_name_delete(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         data['name'] = message.text
     await FSMdelete.next()
-    await message.reply('количество')
+    await message.reply('Количество')
 
 
 async def load_quantity_delete(message: types.Message, state: FSMContext):
@@ -104,7 +104,7 @@ async def load_quantity_delete(message: types.Message, state: FSMContext):
 
 def register_handlers_admin(dp: Dispatcher):
     dp.register_message_handler(commands_start, commands=['операции'])
-    dp.register_message_handler(cm_start, commands=['load'], state=None)
+    dp.register_message_handler(cm_start, commands=['добавить'], state=None)
     dp.register_message_handler(load_photo, content_types=['photo'], state=FSMadmin.photo)
     dp.register_message_handler(cancel_handler, state="*", commands='cancel')
     dp.register_message_handler(cancel_handler, Text(equals='cancel', ignore_case=True), state="*")
@@ -112,6 +112,6 @@ def register_handlers_admin(dp: Dispatcher):
     dp.register_message_handler(load_group, state=FSMadmin.group)
     dp.register_message_handler(load_quantity, state=FSMadmin.quantity)
     dp.register_message_handler(loaded_by, state=FSMadmin.user_name)
-    dp.register_message_handler(cm_start_delete, commands=['delete'])
+    dp.register_message_handler(cm_start_delete, commands=['удалить'])
     dp.register_message_handler(load_name_delete, state=FSMdelete.name)
     dp.register_message_handler(load_quantity_delete, state=FSMdelete.quantity)

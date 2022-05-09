@@ -36,6 +36,6 @@ async def show_by_name(message: types.Message):
 
 def register_handlers_client(dp: Dispatcher):
     dp.register_message_handler(commands_start, commands=['склад'])
-    dp.register_message_handler(show_inventar, commands=['show_all'])
-    dp.register_message_handler(show_by_group, commands=['show_groups'])
-    dp.register_message_handler(show_by_name, commands=['show_names'])
+    dp.register_message_handler(show_inventar, commands=['показать_все'])
+    dp.register_message_handler(show_by_group, commands=['сортировка_по_группам'])
+    dp.register_message_handler(show_by_name, commands=['сортировка_по_наименованию'])
