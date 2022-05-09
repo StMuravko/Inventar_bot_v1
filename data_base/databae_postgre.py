@@ -8,8 +8,6 @@ cur = base.cursor()
 
 
 def create_db():
-    base = psycopg2.connect(BD_URL)
-    cur = base.cursor()
     if base:
         cur.execute(
             "CREATE TABLE IF NOT EXISTS inventar(photo TEXT, name TEXT PRIMARY KEY, groups TEXT, quantity INTEGER, loaded_by TEXT)"
