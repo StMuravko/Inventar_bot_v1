@@ -1,13 +1,15 @@
 from aiogram.utils import executor
 
 from create_bot import dp
-from data_base import sqlite_db
+from data_base import databae_postgre
 from handlers import admin, client, others
+APP_TOKEN = "https://git.heroku.com/tgbotsklad.git"
 
 
 async def on_startup(_):
     print('bot online')
-    sqlite_db.sql_start()
+    databae_postgre.create_db()
+    print('DB connected')
 
 
 others.register_handlers_other(dp)

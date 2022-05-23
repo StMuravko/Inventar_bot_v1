@@ -1,3 +1,0 @@
-aiogram==2.20
-async-timeout==4.0.2
-
